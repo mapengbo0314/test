@@ -1,0 +1,1754 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Verint User Management API",
+    "description": "The User Management API allows managing organization, employee and other related data.",
+    "version": "1.0.0",
+    "termsOfService": "https://www.verint.com/our-company/legal-documents/verintcom-terms-of-service/",
+    "license": {
+      "name": "Verint Master Customer Agreement",
+      "url": "https://www.verint.com/our-company/legal-documents/master-agreement/"
+    },
+    "x-vc-product_code": "WFMENT",
+    "x-vc-product_suite": "WFO",
+    "contact": {
+      "name": "API Support",
+      "url": "https://community.verint.com/support/"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://wfo.g3.verintcloudservices.com/wfo/user-mgmt-api/v1"
+    }
+  ],
+  "security": [
+    {
+      "apikey": []
+    }
+  ],
+  "paths": {
+    "/employees": {
+      "get": {
+        "tags": [
+          "employeeManagement"
+        ],
+        "summary": "Retrieve all employees",
+        "parameters": [
+          {
+            "name": "filter[username][LIKE]",
+            "in": "query",
+            "description": "Filters the resource results list by the employee username.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filter[firstName][LIKE]",
+            "in": "query",
+            "description": "Filters the resource results list by the employee first name.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filter[lastName][LIKE]",
+            "in": "query",
+            "description": "Filters the resource results list by the employee last name.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filter[employeeNumber][LIKE]",
+            "in": "query",
+            "description": "Filters the resource results list by the employee number.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "The field used to sort the results list.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "operationId": "getAllEmployees",
+        "responses": {
+          "200": {
+            "description": "Successful response with employees data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/EmployeeResponseDataDto"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createEmployee",
+        "tags": [
+          "employeeManagement"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "organizationId",
+            "required": true,
+            "description": "The ID of the organization that the employee belongs to",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "summary": "Creates a new employee record.",
+        "description": "A POST request creates a new employee.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmployeeCreateRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "headers": {
+              "Location": {
+                "description": "URL of the newly created resource",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "employeeManagement"
+        ],
+        "summary": "Updates an employee's information",
+        "description": "Updates an existing employee's information with the provided attributes",
+        "operationId": "updateEmployee",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmployeeUpdateRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/employees/{employeeId}": {
+      "get": {
+        "tags": [
+          "employeeManagement"
+        ],
+        "summary": "Get employee by ID",
+        "operationId": "getEmployeeById",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/employeeIdParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmployeeResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "description": "Not Found. The employee with the specified ID was not found."
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Deletes an employee by ID.",
+        "operationId": "deleteEmployeeById",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/employeeIdParam"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content. The employee was successfully deleted."
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "description": "Not Found. The employee with the specified ID was not found."
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        },
+        "tags": [
+          "employeeManagement"
+        ]
+      }
+    },
+    "/employees/{employeeId}/roles": {
+      "get": {
+        "tags": [
+          "roleManagement"
+        ],
+        "summary": "Get roles for an employee",
+        "description": "Returns a list of roles assigned to the specified employee.",
+        "operationId": "getEmployeeRoles",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/employeeIdParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json;charset=UTF-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmployeeRolesResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "description": "Not Found. The employee with the specified ID was not found."
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "roleManagement"
+        ],
+        "summary": "Assign roles to an employee",
+        "description": "Assign roles to an employee identified by employeeId",
+        "operationId": "assignEmployeeRoles",
+        "requestBody": {
+          "description": "Request body for assigning roles",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignRoleRequestDto"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/employeeIdParam"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "description": "Not Found. The employee with the specified ID was not found."
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/roles": {
+      "get": {
+        "tags": [
+          "roleManagement"
+        ],
+        "summary": "Get a list of roles",
+        "operationId": "getAllRoles",
+        "parameters": [
+          {
+            "name": "filter[name][LIKE]",
+            "in": "query",
+            "description": "Filters the list returned by the name of the role",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filter[organizationName][LIKE]",
+            "in": "query",
+            "description": "Filters the list based on the specified organization name",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json;charset=UTF-8": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/RoleDto"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/employees/{employeeId}/jobTitle": {
+      "get": {
+        "tags": [
+          "jobTitleManagement"
+        ],
+        "summary": "Retrieves the job title of a specific employee",
+        "operationId": "getEmployeeJobTitle",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/employeeIdParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmployeeJobTitleResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "jobTitleManagement"
+        ],
+        "summary": "Update employee job title information",
+        "description": "Update the job title information for an employee identified by {employeeId}.",
+        "operationId": "updateEmployeeJobTitle",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/employeeIdParam"
+          },
+          {
+            "name": "startTime",
+            "in": "query",
+            "description": "Start time for the job title",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JobTitleUpdateRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Job title information updated successfully"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/employees/{employeeId}/supervisor": {
+      "get": {
+        "tags": [
+          "supervisorManagement"
+        ],
+        "summary": "Get supervisor of an employee",
+        "operationId": "getEmployeeSupervisor",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/employeeIdParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmployeeSupervisorResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "supervisorManagement"
+        ],
+        "operationId": "updateEmployeeSupervisor",
+        "summary": "Update supervisor for an employee",
+        "description": "Update the supervisor for an employee with the given ID and start time.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/employeeIdParam"
+          },
+          {
+            "in": "query",
+            "name": "startTime",
+            "description": "Start time for the supervisor relationship",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmployeeSupervisorUpdateRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/organizations": {
+      "get": {
+        "summary": "Get a list of organizations",
+        "operationId": "getOrgsList",
+        "parameters": [
+          {
+            "name": "filter[name][LIKE]",
+            "in": "query",
+            "description": "Filters organizations by name (case-insensitive, partial match)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filter[timeZone][LIKE]",
+            "in": "query",
+            "description": "Filters organizations by time zone (case-insensitive, partial match)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filter[location][LIKE]",
+            "in": "query",
+            "description": "Filters organizations by location (case-insensitive, partial match)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Sorts organizations by the given field, optionally with a minus sign for descending order",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of organizations",
+            "content": {
+              "application/json;charset=UTF-8": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/OrganizationDto"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/organizations/{orgId}/employees": {
+      "get": {
+        "summary": "Retrieves a list of employees for an organization",
+        "operationId": "getOrgEmployees",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/orgIdParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrgEmployeeListDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update employees for an organization",
+        "operationId": "updateOrgEmployees",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/orgIdParam"
+          },
+          {
+            "name": "startTime",
+            "in": "query",
+            "description": "Employee start time parameter to set the employee Start Date",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "List of employees to update",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmployeeUpdateRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Successful operation with no response body"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/organizations/{orgId}/jobTitles": {
+      "get": {
+        "summary": "Retrieves a list of job titles for an organization",
+        "operationId": "getOrgJobTitles",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/orgIdParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/JobTitleDto"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "description": "Organization not found"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "apikey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Impact360AuthToken"
+      }
+    },
+    "parameters": {
+      "orgIdParam": {
+        "name": "orgId",
+        "in": "path",
+        "description": "The ID of the organization",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "employeeIdParam": {
+        "name": "employeeId",
+        "in": "path",
+        "description": "ID of the employee",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "schemas": {
+      "EmployeeCreateRequestDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/EmployeeCreateDataDto"
+          }
+        }
+      },
+      "EmployeeCreateDataDto": {
+        "type": "object",
+        "properties": {
+          "attributes": {
+            "$ref": "#/components/schemas/EmployeeAttributesDto"
+          }
+        }
+      },
+      "EmployeeUpdateRequestDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/EmployeeUpdateDataDto"
+          }
+        }
+      },
+      "EmployeeUpdateDataDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Id of an employee whose data is to be updated",
+            "example": "1"
+          },
+          "attributes": {
+            "$ref": "#/components/schemas/EmployeeAttributesDto"
+          }
+        }
+      },
+      "EmployeeResponseDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/EmployeeResponseDataDto"
+          },
+          "links": {
+            "$ref": "#/components/schemas/SelfLinksDto"
+          }
+        }
+      },
+      "EmployeeResponseDataDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "attributes": {
+            "$ref": "#/components/schemas/EmployeeResponseAttributesDto"
+          },
+          "relationships": {
+            "$ref": "#/components/schemas/RelationshipsDto"
+          }
+        }
+      },
+      "EmployeeResponseAttributesDto": {
+        "type": "object",
+        "properties": {
+          "qmAnalyticsId": {
+            "type": "integer",
+            "description": "External unique identifier for the employee object",
+            "example": 123
+          },
+          "person": {
+            "$ref": "#/components/schemas/PersonDto"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserDto"
+          },
+          "organizationId": {
+            "type": "integer",
+            "description": "Id of employee's organization",
+            "example": 1
+          },
+          "employeeType": {
+            "type": "string",
+            "description": "The type of employee (e.g. Full-time, Part-time, Contractor)",
+            "example": "Full-time"
+          },
+          "employeeNumber": {
+            "type": "string",
+            "description": "The unique identifier for the employee within the organization",
+            "example": "1"
+          },
+          "startTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The start date and time of the employee's employment",
+            "example": "2015-04-11T11:00:00Z"
+          },
+          "endTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The end date and time of the employee's employment",
+            "example": "2020-04-12T06:59:00Z"
+          },
+          "isSupervisor": {
+            "type": "boolean",
+            "description": "Indicates whether the employee is a supervisor",
+            "example": false
+          },
+          "isTeamLead": {
+            "type": "boolean",
+            "description": "Indicates whether the employee is a team lead",
+            "example": false
+          }
+        }
+      },
+      "EmployeeAttributesDto": {
+        "type": "object",
+        "properties": {
+          "person": {
+            "$ref": "#/components/schemas/PersonDto"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserDto"
+          },
+          "employeeType": {
+            "type": "string",
+            "description": "The type of employee (e.g. Full-time, Part-time, Contractor)",
+            "example": "Full-time"
+          },
+          "employeeNumber": {
+            "type": "string",
+            "description": "The unique identifier for the employee within the organization",
+            "example": "1"
+          },
+          "startTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The start date and time of the employee's employment",
+            "example": "2015-04-11T11:00:00Z"
+          },
+          "endTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The end date and time of the employee's employment",
+            "example": "2020-04-12T06:59:00Z"
+          },
+          "isSupervisor": {
+            "type": "boolean",
+            "description": "Indicates whether the employee is a supervisor",
+            "example": false
+          },
+          "isTeamLead": {
+            "type": "boolean",
+            "description": "Indicates whether the employee is a team lead",
+            "example": false
+          }
+        }
+      },
+      "PersonDto": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "$ref": "#/components/schemas/AddressDto"
+          },
+          "contact": {
+            "$ref": "#/components/schemas/ContactDto"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "The first name of the person",
+            "example": "Dinesh"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "The last name of the person",
+            "example": "Sampangi"
+          },
+          "middleInitial": {
+            "type": "string",
+            "description": "The middle initial of the person",
+            "example": "B"
+          },
+          "ssn": {
+            "type": "string",
+            "description": "The social security number of the person",
+            "example": "XXX-XX-XXXX"
+          },
+          "birthDate": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The date and time of the person's birth",
+            "example": "1988-03-11T05:00:00Z"
+          }
+        }
+      },
+      "UserDto": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "The username of the user account associated with the employee",
+            "example": "username1"
+          },
+          "status": {
+            "type": "string",
+            "description": "The status of the user account (e.g. ACTIVE, INACTIVE)",
+            "example": "ACTIVE"
+          }
+        }
+      },
+      "AddressDto": {
+        "type": "object",
+        "properties": {
+          "addressLine1": {
+            "type": "string",
+            "description": "The first line of the street address",
+            "example": "795 E DRAGRAM"
+          },
+          "addressLine2": {
+            "type": "string",
+            "description": "The second line of the street address",
+            "example": "TUCSON AZ 85705"
+          },
+          "addressLine3": {
+            "type": "string",
+            "description": "The third line of the street address",
+            "example": "200 E MAIN ST"
+          },
+          "city": {
+            "type": "string",
+            "description": "The city of the address",
+            "example": "SEATTLE"
+          },
+          "stateName": {
+            "type": "string",
+            "description": "The state name or code of the address",
+            "example": "WA 98104"
+          },
+          "zipCode": {
+            "type": "string",
+            "description": "The zip code of the address",
+            "example": "79053"
+          },
+          "country": {
+            "type": "string",
+            "description": "The country of the address",
+            "example": "USA"
+          }
+        }
+      },
+      "ContactDto": {
+        "type": "object",
+        "description": "Contact details of an employee",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address of an employee",
+            "example": "johndoe@example.com"
+          },
+          "desktopMessagingUsername": {
+            "type": "string",
+            "description": "Desktop messaging username of an employee",
+            "example": "john.doe"
+          },
+          "homePhone": {
+            "type": "string",
+            "description": "Home phone number of an employee",
+            "example": "555-123-4567"
+          },
+          "workPhone": {
+            "type": "string",
+            "description": "Work phone number of an employee",
+            "example": "555-234-5678"
+          },
+          "cellPhone": {
+            "type": "string",
+            "description": "Cell phone number of an employee",
+            "example": "555-345-6789"
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "AssignRoleRequestDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/AssignRoleDataDto"
+          }
+        }
+      },
+      "AssignRoleDataDto": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/AccessRightDto"
+        }
+      },
+      "AccessRightDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "accessRight"
+          },
+          "attributes": {
+            "$ref": "#/components/schemas/AccessRightAttributesDto"
+          }
+        },
+        "required": [
+          "type",
+          "attributes"
+        ]
+      },
+      "AccessRightAttributesDto": {
+        "type": "object",
+        "properties": {
+          "roleId": {
+            "type": "integer",
+            "example": 1
+          },
+          "scopes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ScopeDto"
+            }
+          }
+        }
+      },
+      "ScopeDto": {
+        "type": "object",
+        "properties": {
+          "scopeId": {
+            "type": "integer",
+            "example": 1
+          },
+          "scopeType": {
+            "type": "string",
+            "example": "GROUP"
+          }
+        }
+      },
+      "RoleOrganizationDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "GroupDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "RoleAttributesDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The name of the role"
+          },
+          "description": {
+            "type": "string",
+            "description": "The description of the role"
+          },
+          "isDefault": {
+            "type": "boolean",
+            "description": "Indicates whether the role is the default one"
+          },
+          "isAdminRole": {
+            "type": "boolean",
+            "description": "Indicates whether the role is an admin role"
+          }
+        }
+      },
+      "EmployeeRoleRelationshipDto": {
+        "type": "object",
+        "properties": {
+          "organizations": {
+            "type": "object",
+            "properties": {
+              "links": {
+                "type": "object",
+                "properties": {
+                  "related": {
+                    "type": "string"
+                  }
+                }
+              },
+              "data": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/RoleOrganizationDto"
+                }
+              }
+            }
+          },
+          "groups": {
+            "type": "object",
+            "properties": {
+              "links": {
+                "type": "object",
+                "properties": {
+                  "related": {
+                    "type": "string"
+                  }
+                }
+              },
+              "data": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/GroupDto"
+                }
+              }
+            }
+          },
+          "organization": {
+            "type": "object",
+            "properties": {
+              "links": {
+                "type": "object",
+                "properties": {
+                  "related": {
+                    "type": "string"
+                  }
+                }
+              },
+              "data": {
+                "$ref": "#/components/schemas/RoleOrganizationDto"
+              }
+            }
+          }
+        }
+      },
+      "EmployeeRoleDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "attributes": {
+            "$ref": "#/components/schemas/RoleAttributesDto"
+          },
+          "relationships": {
+            "$ref": "#/components/schemas/EmployeeRoleRelationshipDto"
+          },
+          "links": {
+            "$ref": "#/components/schemas/SelfLinksDto"
+          }
+        }
+      },
+      "EmployeeRolesResponseDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EmployeeRoleDto"
+            }
+          }
+        }
+      },
+      "RoleDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The unique identifier of the role"
+          },
+          "type": {
+            "type": "string",
+            "description": "The type of the resource, in this case \"role\""
+          },
+          "attributes": {
+            "$ref": "#/components/schemas/RoleAttributesDto"
+          },
+          "relationships": {
+            "$ref": "#/components/schemas/RelationshipsDto"
+          },
+          "links": {
+            "$ref": "#/components/schemas/SelfLinksDto"
+          }
+        }
+      },
+      "JobTitleUpdateRequestDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/JobTitleUpdateDataDto"
+          }
+        },
+        "description": "The request object for updating a job title."
+      },
+      "JobTitleUpdateDataDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "1",
+            "description": "The ID of the job title to update."
+          },
+          "type": {
+            "type": "string",
+            "example": "jobTitle",
+            "description": "The type of resource being updated."
+          },
+          "attributes": {
+            "$ref": "#/components/schemas/JobTitleAttributesDto",
+            "description": "The attributes of the job title to update."
+          }
+        }
+      },
+      "JobTitleDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the job title."
+          },
+          "type": {
+            "type": "string",
+            "description": "The resource type, should be set to \"jobTitle\"."
+          },
+          "attributes": {
+            "$ref": "#/components/schemas/JobTitleAttributesDto"
+          },
+          "relationships": {
+            "$ref": "#/components/schemas/RelationshipsDto"
+          },
+          "links": {
+            "$ref": "#/components/schemas/SelfLinksDto"
+          }
+        }
+      },
+      "JobTitleAttributesDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Administrator",
+            "description": "The name of the job title."
+          },
+          "description": {
+            "type": "string",
+            "example": "System administrator of the block A",
+            "description": "The description of the job title."
+          }
+        }
+      },
+      "EmployeeJobTitleResponseDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/EmployeeJobTitleDto"
+          },
+          "links": {
+            "$ref": "#/components/schemas/SelfLinksDto"
+          }
+        }
+      },
+      "EmployeeJobTitleDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "example": "jobTitle"
+          },
+          "attributes": {
+            "$ref": "#/components/schemas/JobTitleAttributesDto"
+          },
+          "relationships": {
+            "$ref": "#/components/schemas/RelationshipsDto"
+          }
+        }
+      },
+      "EmployeeSupervisorResponseDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/EmployeeShortDataDto"
+          },
+          "links": {
+            "$ref": "#/components/schemas/SelfLinksDto"
+          }
+        }
+      },
+      "EmployeeSupervisorUpdateRequestDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/EmployeeShortDataDto"
+          }
+        }
+      },
+      "OrganizationDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "attributes": {
+            "$ref": "#/components/schemas/OrganizationAttributesDto"
+          },
+          "relationships": {
+            "$ref": "#/components/schemas/OrganizationRelationshipsDto"
+          },
+          "links": {
+            "$ref": "#/components/schemas/OrganizationLinksDto"
+          }
+        }
+      },
+      "OrganizationAttributesDto": {
+        "type": "object",
+        "properties": {
+          "qmAnalyticsId": {
+            "type": "integer"
+          },
+          "parentId": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "timeZone": {
+            "type": "string"
+          },
+          "weekStartDay": {
+            "type": "string"
+          },
+          "seatsNumber": {
+            "type": "integer"
+          },
+          "location": {
+            "type": "string"
+          }
+        }
+      },
+      "OrganizationRelationshipsDto": {
+        "type": "object",
+        "properties": {
+          "organizations": {
+            "$ref": "#/components/schemas/OrganizationRelationshipsOrganizationsDto"
+          }
+        }
+      },
+      "OrganizationRelationshipsOrganizationsDto": {
+        "type": "object",
+        "properties": {
+          "links": {
+            "$ref": "#/components/schemas/RelatedLinksDto"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AssociatedEntityDataDto"
+            }
+          }
+        }
+      },
+      "OrganizationLinksDto": {
+        "type": "object",
+        "properties": {
+          "self": {
+            "type": "string"
+          },
+          "related": {
+            "$ref": "#/components/schemas/OrganizationLinksRelatedDto"
+          }
+        }
+      },
+      "OrganizationLinksRelatedDto": {
+        "type": "object",
+        "properties": {
+          "href": {
+            "type": "string"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/MetaDto"
+          }
+        }
+      },
+      "OrgEmployeeUpdateRequestDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EmployeeShortDataDto"
+            }
+          }
+        }
+      },
+      "OrgEmployeeListDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrgEmployeeDto"
+            }
+          },
+          "links": {
+            "$ref": "#/components/schemas/SelfLinksDto"
+          }
+        }
+      },
+      "OrgEmployeeDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "example": "employee"
+          },
+          "attributes": {
+            "$ref": "#/components/schemas/EmployeeShortAttributesDto"
+          },
+          "links": {
+            "$ref": "#/components/schemas/SelfLinksDto"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "attributes",
+          "links"
+        ]
+      },
+      "RelationshipsDto": {
+        "type": "object",
+        "properties": {
+          "organization": {
+            "$ref": "#/components/schemas/AssociatedEntityDto"
+          }
+        }
+      },
+      "AssociatedEntityDto": {
+        "type": "object",
+        "properties": {
+          "links": {
+            "$ref": "#/components/schemas/RelatedLinksDto"
+          },
+          "data": {
+            "$ref": "#/components/schemas/AssociatedEntityDataDto"
+          }
+        }
+      },
+      "AssociatedEntityDataDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/MetaDto"
+          }
+        }
+      },
+      "MetaDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "description": "Name of associated entity",
+            "type": "string"
+          }
+        }
+      },
+      "SelfLinksDto": {
+        "type": "object",
+        "properties": {
+          "self": {
+            "type": "string",
+            "description": "A link to the entity itself."
+          }
+        }
+      },
+      "RelatedLinksDto": {
+        "type": "object",
+        "properties": {
+          "related": {
+            "type": "string",
+            "description": "A link to related entity."
+          }
+        }
+      },
+      "EmployeeShortDataDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "1",
+            "description": "Unique identifier for the employee object."
+          },
+          "type": {
+            "type": "string",
+            "example": "employee",
+            "description": "Resource type"
+          },
+          "attributes": {
+            "$ref": "#/components/schemas/EmployeeShortAttributesDto"
+          }
+        }
+      },
+      "EmployeeShortAttributesDto": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "example": "Vitalii",
+            "description": "The first name of the employee."
+          },
+          "lastName": {
+            "type": "string",
+            "example": "Lo",
+            "description": "The last name of the employee."
+          },
+          "middleInitial": {
+            "type": "string",
+            "example": "B",
+            "description": "The middle initial of the employee."
+          }
+        }
+      },
+      "UnauthorizedError": {
+        "description": "Access token is missing or invalid"
+      },
+      "FisExceptionResponse": {
+        "type": "object",
+        "properties": {
+          "errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResponseError"
+            }
+          }
+        }
+      },
+      "ResponseError": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "detail": {
+            "type": "string"
+          },
+          "source": {
+            "$ref": "#/components/schemas/ErrorSource"
+          }
+        }
+      },
+      "ErrorSource": {
+        "type": "object",
+        "properties": {
+          "pointer": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Bad request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/FisExceptionResponse"
+            }
+          }
+        }
+      },
+      "TooManyRequests": {
+        "description": "Too many requests",
+        "content": {
+          "application/json": {
+            "example": {
+              "errors": [
+                {
+                  "status": "429",
+                  "title": "Too many requests.",
+                  "detail": "Too many requests, max amount of requests 50 calls/second",
+                  "source": {
+                    "pointer": "request parameter"
+                  }
+                }
+              ]
+            },
+            "schema": {
+              "$ref": "#/components/schemas/FisExceptionResponse"
+            }
+          }
+        }
+      },
+      "InternalServerError": {
+        "description": "Internal server error",
+        "content": {
+          "application/json": {
+            "example": {
+              "errors": [
+                {
+                  "status": "500",
+                  "title": "Internal server error",
+                  "detail": "Internal server error",
+                  "source": {
+                    "pointer": "request parameter"
+                  }
+                }
+              ]
+            },
+            "schema": {
+              "$ref": "#/components/schemas/FisExceptionResponse"
+            }
+          }
+        }
+      }
+    }
+  }
+}
